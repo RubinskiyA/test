@@ -1,0 +1,48 @@
+```
+# Build artifacts
+*.o
+*.obj
+*.a
+*.lib
+*.dylib
+*.so
+*.dll
+*.exe
+*.out
+
+# iOS specific
+*.ipa
+*.app
+*.xcarchive
+*.dSYM
+build/
+DerivedData/
+
+# Dependencies
+Pods/
+Carthage/
+node_modules/
+vendor/
+
+# Logs and temp files
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS generated files
+.DS_Store
+Thumbs.db
+```
