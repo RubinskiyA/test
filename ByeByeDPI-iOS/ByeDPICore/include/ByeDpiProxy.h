@@ -41,4 +41,9 @@ int bye_dpi_is_running(void);
 // Get last error message
 const char* bye_dpi_get_error(void);
 
+// Test a specific DPI bypass strategy
+// Returns 0 if the strategy works (connection successful), non-zero otherwise
+// This function runs a quick test connection using the provided arguments
+int test_byedpi_strategy(const char** argv, int argc);
+
 #endif /* ByeDpiProxy_h */
