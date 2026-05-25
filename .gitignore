@@ -3,46 +3,53 @@
 *.o
 *.obj
 *.a
-*.lib
 *.dylib
-*.so
-*.dll
-*.exe
-*.out
-
-# iOS specific
-*.ipa
+*.framework
 *.app
-*.xcarchive
-*.dSYM
-build/
-DerivedData/
+*.ipa
+*.dSYM/
 
 # Dependencies
 Pods/
 Carthage/
 node_modules/
-vendor/
+build/
+DerivedData/
 
-# Logs and temp files
-*.log
-*.tmp
-*.temp
-*.swp
-*.swo
+# Xcode
+*.xcodeproj/
+*.xcworkspace/
+*.xcuserstate
+project.xcworkspace/
+xcuserdata/
+
+# Swift
+*.swiftmodule
+*.swiftdoc
+*.swiftdeps
 
 # Environment
 .env
 .env.local
 *.env.*
 
-# Editors
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Coverage
+.coverage
+coverage/
+htmlcov/
+
+# IDE
 .vscode/
 .idea/
 *.swp
-*~
-
-# OS generated files
-.DS_Store
-Thumbs.db
+*.swo
 ```

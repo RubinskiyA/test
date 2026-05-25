@@ -17,6 +17,8 @@ struct DPIProfile: Identifiable {
 struct SettingsView: View {
     @EnvironmentObject var settingsManager: SettingsManager
     @Environment(\.dismiss) var dismiss
+    @StateObject private var strategyTester = StrategyTester()
+    @State private var showTestResults = false
     
     let profiles: [DPIProfile] = [
         DPIProfile(
@@ -44,6 +46,54 @@ struct SettingsView: View {
     var body: some View {
         NavigationView {
             Form {
+                Section(header: Text("Auto-Detection")) {
+                    Button(action: startStrategyTesting) {
+                        HStack {
+                            Image(systemName: strategyTester.isTesting ? "arrow.triangle.2.circlepath" : "wand.and.stars")
+                                .foregroundColor(.accentColor)
+                            VStack(alignment: .leading) {
+                                Text("Auto-detect Best Strategy")
+                                    .font(.body)
+                                Text(strategyTester.isTesting ? "Testing... \(strategyTester.currentTestIndex)/\(strategyTester.totalTests)" : "Test all strategies and find optimal")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    .disabled(strategyTester.isTesting)
+                    
+                    if strategyTester.isTesting {
+                        ProgressView(value: strategyTester.progress)
+                            .progressViewStyle(LinearProgressViewStyle())
+                    }
+                    
+                    if let best = strategyTester.bestStrategy {
+                        HStack {
+                            Image(systemName: "checkmark.seal.fill")
+                                .foregroundColor(.green)
+                            VStack(alignment: .leading) {
+                                Text("Best Strategy Found")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                Text(best.displayText)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        
+                        Button("Apply This Strategy") {
+                            strategyTester.saveBestStrategy(to: settingsManager)
+                        }
+                        .buttonStyle(.borderedProminent)
+                    }
+                    
+                    if !strategyTester.results.isEmpty && !strategyTester.isTesting {
+                        NavigationLink(destination: testResultsView) {
+                            Label("View All Results", systemImage: "list.bullet")
+                        }
+                    }
+                }
+                
                 Section(header: Text("DPI Bypass Profile")) {
                     Picker("Profile", selection: $settingsManager.selectedProfile) {
                         ForEach(profiles) { profile in
@@ -115,6 +165,46 @@ struct SettingsView: View {
                     }
                 }
             }
+        }
+    }
+    
+    // MARK: - Helper Views
+    
+    private var testResultsView: some View {
+        List(strategyTester.results) { result in
+            HStack {
+                Image(systemName: result.success ? "checkmark.circle.fill" : "xmark.circle.fill")
+                    .foregroundColor(result.success ? .green : .red)
+                VStack(alignment: .leading) {
+                    Text(result.strategyName)
+                        .font(.subheadline)
+                    if let latency = result.latencyMs {
+                        Text("\(Int(latency)) ms")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    if let error = result.errorMessage {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundColor(.red)
+                    }
+                }
+                Spacer()
+                if strategyTester.bestStrategy?.id == result.id {
+                    Image(systemName: "star.fill")
+                        .foregroundColor(.yellow)
+                }
+            }
+        }
+        .navigationTitle("Test Results")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    // MARK: - Methods
+    
+    private func startStrategyTesting() {
+        Task {
+            await strategyTester.startTesting()
         }
     }
 }
